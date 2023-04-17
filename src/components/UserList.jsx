@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from 'features/users/usersSlice';
 
 const UserList = () => {
-  const { users, loading, error } = useSelector((state) => state);
+  const { userList, isLoading, error } = useSelector((state) => state.users);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -13,15 +14,16 @@ const UserList = () => {
   return (
     <div className="user-container">
       <h1>User Details</h1>
-      {loading && !error && <p>Loading...</p>}
-      {error && !loading && <p>{error}</p>}
-      {users.map((user) => (
-        <div key={user.id} className="user">
-          <h2>{user.name}</h2>
-          <p>{user.email}</p>
-          <p>{user.phone}</p>
-        </div>
-      ))}
+      {isLoading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
+      {!isLoading
+        && userList.map((user) => (
+          <div key={user.id} className="user">
+            <p>
+              <span>{`${user.name.title} ${user.name.first} ${user.name.last}`}</span>
+            </p>
+          </div>
+        ))}
     </div>
   );
 };

@@ -3,21 +3,21 @@ import axios from 'axios';
 
 const URL = 'https://randomuser.me/api/?results=5';
 
-export const fetchUsers = createAsyncThunk('users/fetchUsers', async (thunkAPI) => {
-  const { rejectWithValue } = thunkAPI;
-  try {
-    const response = await axios.get(URL);
-    if (!response.ok) {
-      throw new Error(response.statusText);
+export const fetchUsers = createAsyncThunk(
+  'users/fetchUsers',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(URL);
+      const { data } = response;
+      return data.results;
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
-    return response.data.results;
-  } catch (error) {
-    return rejectWithValue(error);
-  }
-});
+  },
+);
 
 const initialState = {
-  users: [],
+  userList: [],
   isLoading: false,
   error: undefined,
 };
@@ -35,7 +35,7 @@ const usersSlice = createSlice({
       .addCase(fetchUsers.fulfilled, (state, action) => ({
         ...state,
         isLoading: false,
-        users: action.payload,
+        userList: action.payload,
       }))
       .addCase(fetchUsers.rejected, (state, action) => ({
         ...state,
