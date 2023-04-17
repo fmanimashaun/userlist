@@ -1,9 +1,10 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const URL = "https://randomuser.me/api/?results=5";
+const URL = 'https://randomuser.me/api/?results=5';
 
-export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
+export const fetchUsers = createAsyncThunk('users/fetchUsers', async (thunkAPI) => {
+  const { rejectWithValue } = thunkAPI;
   try {
     const response = await axios.get(URL);
     if (!response.ok) {
@@ -15,11 +16,10 @@ export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
   }
 });
 
-
 const initialState = {
   users: [],
   isLoading: false,
-  error: undefined
+  error: undefined,
 };
 
 const usersSlice = createSlice({
@@ -28,18 +28,21 @@ const usersSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUsers.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.users = action.payload;
-      })
-      .addCase(fetchUsers.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.error.message;
-      });
-  }
+      .addCase(fetchUsers.pending, (state) => ({
+        ...state,
+        isLoading: true,
+      }))
+      .addCase(fetchUsers.fulfilled, (state, action) => ({
+        ...state,
+        isLoading: false,
+        users: action.payload,
+      }))
+      .addCase(fetchUsers.rejected, (state, action) => ({
+        ...state,
+        isLoading: false,
+        error: action.error.message,
+      }));
+  },
 });
 
 export default usersSlice.reducer;

@@ -1,6 +1,8 @@
+import UserList from 'components/UserList';
+
 const App = () => (
   <>
-    <h1>Hello</h1>
+    <UserList />
   </>
 );
 
